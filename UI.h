@@ -9,6 +9,10 @@ namespace UI
     extern Color CanvasColor;
     extern Color LineColor;
 
+    /*
+    A Base class for all the UI elements.
+    Elements like buttons, labels, viewport, etc inherit from this class
+    */
     class UIComponent
     {
 
@@ -33,27 +37,58 @@ namespace UI
         };
     };
 
-    class Box : public UIComponent
-    {
-    public:
-        Box(Vector2 p, float w, float h) : UIComponent(p, w, h)
-        {
-        }
-
-        void render() override
-        {
-            DrawRectangleLines(position.x, position.y, width, height, LineColor);
-        }
-    };
-
     /*
-    An abstract base class for all types of objects that can be
-    drawn on a graph
+    An abstract base class for all types of objects that can be drawn on a graph
     */
     class AbstractShape
     {
     public:
-        virtual void render() = 0;
+        virtual void render(float delx, float dely) = 0;
+    };
+
+    class Polygon : public AbstractShape
+    {
+    protected:
+        std::vector<Vector2> vertices;
+
+    public:
+        Polygon()
+        {
+            vertices = {};
+        }
+        void addVertex(Vector2 v)
+        {
+            vertices.push_back(v);
+        }
+
+        void addVertex(float x, float y)
+        {
+            vertices.push_back((Vector2){x, y});
+        }
+
+        /*
+        Renders the polygon to the viewport
+        */
+        void render(float originx, float originy) override
+        {
+
+            for (Vector2 p : vertices)
+                DrawCircle(p.x + originx, p.y + originy, 3.0f, LineColor);
+
+            Vector2 start, end;
+
+            std::vector<Vector2>::iterator it;
+            for (it = vertices.begin(); it < vertices.end() - 1; ++it)
+            {
+                start = (Vector2){originx + it->x, originy + it->y};
+                end = (Vector2){originx + (it + 1)->x, originy + (it + 1)->y};
+                DrawLineEx(start, end, 2.0f, LineColor);
+            }
+
+            start = (Vector2){originx + it->x, originy + it->y};
+            end = (Vector2){originx + vertices.begin()->x, originy + vertices.begin()->x};
+            DrawLineEx(start, end, 2.0f, LineColor);
+        }
     };
 
     /*
@@ -61,10 +96,9 @@ namespace UI
     */
     class Graph
     {
-    protected:
+    public:
         std::vector<AbstractShape *> objects;
 
-    public:
         Graph()
         {
             objects = {};
@@ -89,17 +123,6 @@ namespace UI
         {
             objects.erase(objects.begin() + first, objects.begin() + last);
         }
-
-        /*
-        Render all the shapes present in the graph
-        */
-        void render()
-        {
-            for (AbstractShape *s : objects)
-            {
-                s->render();
-            }
-        }
     };
 
     class Viewport : public UIComponent
@@ -112,7 +135,6 @@ namespace UI
 
     protected:
         Vector2 graphPosition;
-        UI::Graph graph;
 
         void renderGridlines()
         {
@@ -159,7 +181,15 @@ namespace UI
             }
         }
 
+        void renderGraphObjects()
+        {
+            for (AbstractShape *s : graph.objects)
+                s->render(position.x + graphPosition.x, position.y + graphPosition.y);
+        }
+
     public:
+        UI::Graph graph;
+
         Viewport(Vector2 p, float w, float h) : UIComponent(p, w, h)
         {
             graphPosition = (Vector2){w / 2, h / 2};
@@ -172,9 +202,7 @@ namespace UI
             DrawRectangleRec(bounds, BGColor);
             DrawRectangleLinesEx(bounds, 3.0f, BorderColor);
             renderGridlines();
-
-            // Render all the objects in the graph
-            graph.render();
+            renderGraphObjects();
         }
     };
 
