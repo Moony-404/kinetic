@@ -1,14 +1,19 @@
 
+PROJECT_NAME = kinetic
 CFLAGS = -Wall
 LDFLAGS = -lraylib -lGL -lm -lpthread -lrt -lX11
-PROJECT_NAME = kinetic
+FILES = main.cpp display.cpp
 
 devbuild : 
-	g++ -g main.cpp $(CFLAGS) $(LDFLAGS) -o devbuild
+	g++ -g $(FILES) $(CFLAGS) $(LDFLAGS) -o devbuild
 
 release :
-	g++ -O2 main.cpp $(CFLAGS) $(LDFLAGS) -o $(PROJECT_NAME) 
+	g++ -O2 $(FILES) $(CFLAGS) $(LDFLAGS) -o $(PROJECT_NAME) 
 
 clean :
-	@if [ -f ./devbuild ]; then 		rm -f ./devbuild; 	fi
-	@if [ -f ./$(PROJECT_NAME) ]; then 		rm -f ./$(PROJECT_NAME); 	fi
+	@if [ -f ./devbuild ]; then	\
+		rm -f ./devbuild; \
+	fi
+	@if [ -f ./$(PROJECT_NAME) ]; then \
+		rm -f ./$(PROJECT_NAME); \
+	fi
