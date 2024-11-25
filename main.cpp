@@ -8,28 +8,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Kinetic");
     SetTargetFPS(60);
 
-    UI::Viewport v((Vector2){50, 50}, 700, 450);
-    /*
-    Create and add a triangle to the graph
-    */
-    UI::Polygon t;
-    t.addVertex(20.0f, 20.0f);
-    t.addVertex(100.0f, 100.0f);
-    t.addVertex(200.0f, 40.0f);
+    void extern RunApplication();
 
-    v.graph.add(&t);
-
-    v.setGridSpace(20.0f);
-
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-
-        {
-            ClearBackground(UI::BGColor);
-            v.render();
-        }
-
-        EndDrawing();
-    }
+    RunApplication();
 }

@@ -2,7 +2,7 @@
 PROJECT_NAME = kinetic
 CFLAGS = -Wall
 LDFLAGS = -lraylib -lGL -lm -lpthread -lrt -lX11
-FILES = main.cpp display.cpp
+FILES = main.cpp display.cpp app.cpp
 
 devbuild : 
 	g++ -g $(FILES) $(CFLAGS) $(LDFLAGS) -o devbuild

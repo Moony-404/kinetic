@@ -5,7 +5,7 @@ Color UI::CanvasColor = {59, 66, 82, 255};
 Color UI::LineColor = {136, 191, 208, 255};
 
 /*
-Definitions of UI::Polygon methods
+Implementation of UI::Polygon methods
 */
 
 UI::Polygon::Polygon()
@@ -46,7 +46,7 @@ void UI::Polygon::render(float originx, float originy)
 }
 
 /*
-Definitions of UI::Graph methods
+Implementation of UI::Graph methods
 */
 
 UI::Graph::Graph()
@@ -76,7 +76,7 @@ void UI::Graph::remove(int first, int last)
 }
 
 /*
-Definitions of UI::Viewport method
+Implementation of UI::Viewport method
 */
 
 UI::Viewport::Viewport(Vector2 p, float w, float h) : UIComponent(p, w, h)
@@ -148,4 +148,24 @@ void UI::Viewport::renderGraphObjects()
 {
     for (AbstractShape *s : graph.objects)
         s->render(position.x + graphPosition.x, position.y + graphPosition.y);
+}
+
+/*
+Implementation of UI::UIComponentList methods
+*/
+
+void UI::UIComponentList::setList(std::vector<UIComponent *> c)
+{
+    components = c;
+}
+
+void UI::UIComponentList::add(UIComponent *c)
+{
+    components.push_back(c);
+}
+
+void UI::UIComponentList::render()
+{
+    for (auto c : components)
+        c->render();
 }

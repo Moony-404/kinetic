@@ -33,6 +33,24 @@ namespace UI
     };
 
     /*
+    A class to contain all the UIComponents needed in an application.
+    */
+    class UIComponentList
+    {
+    protected:
+        /*
+        The `components` attributes contain pointers to all the UIComponents in the order they
+        should be drawn onto the screen.
+        */
+        std::vector<UIComponent *> components = {};
+
+    public:
+        void setList(std::vector<UIComponent *> c);
+        void add(UIComponent *c);
+        void render();
+    };
+
+    /*
     An abstract base class for all types of objects that can be drawn on a graph
     */
     class AbstractShape
