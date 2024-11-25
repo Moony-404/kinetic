@@ -19,6 +19,8 @@ int main(void)
 
     v.graph.add(&t);
 
+    v.setGridSpace(20.0f);
+
     while (!WindowShouldClose())
     {
         BeginDrawing();
