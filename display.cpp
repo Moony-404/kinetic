@@ -23,6 +23,20 @@ void UI::Polygon::addVertex(float x, float y)
     vertices.push_back((Vector2){x, y});
 }
 
+/*
+This function is total BS. The problem of visibility of a polygon require a collision test.
+Specifically, we need to test if the given polygon (simple or self-intersecting) overlaps with the
+Viewport window. If it does, then we render it else we don't.
+
+This problem is made is made particularily hard because the polygon can be anything and there is no cheap,
+memory effiecient test to check for its visibility. One approach would be to triangulate the polygon and
+then check the visiblility of those triangles. If any one of the triangles is visible then the shape must
+be atleast partially visible and we must render it.
+
+*/
+
+bool UI::Polygon::isShapeVisible(Vector2 vPosition, Vector2 graphPosition, float width, float height) { return true; }
+
 // Renders the polygon to the viewport
 void UI::Polygon::render(float originx, float originy)
 {
@@ -31,8 +45,8 @@ void UI::Polygon::render(float originx, float originy)
         DrawCircle(p.x + originx, p.y + originy, 3.0f, LineColor);
 
     Vector2 start, end;
-
     std::vector<Vector2>::iterator it;
+
     for (it = vertices.begin(); it < vertices.end() - 1; ++it)
     {
         start = (Vector2){originx + it->x, originy + it->y};
@@ -79,7 +93,7 @@ void UI::Graph::remove(int first, int last)
 Implementation of UI::Viewport method
 */
 
-UI::Viewport::Viewport(Vector2 p, float w, float h) : UIComponent(p, w, h)
+UI::Viewport::Viewport(float x, float y, float w, float h) : UIComponent(x, y, w, h)
 {
     graphPosition = (Vector2){w / 2, h / 2};
     graph = Graph();
@@ -92,6 +106,7 @@ void UI::Viewport::render()
     DrawRectangleLinesEx(bounds, 3.0f, BorderColor);
     renderGridlines();
     renderGraphObjects();
+    renderCover();
 }
 
 void UI::Viewport::setGridSpace(float s)
@@ -150,6 +165,28 @@ void UI::Viewport::renderGraphObjects()
         s->render(position.x + graphPosition.x, position.y + graphPosition.y);
 }
 
+void UI::Viewport::renderCover()
+{
+    Color c = {38, 43, 54, 255};
+    DrawRectangle(0, 0, position.x, position.y + height + 100, c);
+    DrawRectangle(position.x, 0, width, position.y, c);
+    DrawRectangle(position.x, position.y + height, width, 100, c);
+    DrawRectangle(position.x + width, 0, 100, position.y + height + 100, c);
+}
+
+void UI::Viewport::handleMouseEvent()
+{
+    if (IsKeyDown(KEY_SPACE))
+    {
+        pan(GetMouseDelta());
+    }
+}
+
+void UI::Viewport::pan(Vector2 mouseDelta)
+{
+    graphPosition = Vector2Add(graphPosition, mouseDelta);
+}
+
 /*
 Implementation of UI::UIComponentList methods
 */
@@ -168,4 +205,32 @@ void UI::UIComponentList::render()
 {
     for (auto c : components)
         c->render();
+}
+
+void UI::UIComponentList::setActiveComponent()
+{
+    Vector2 point = GetMousePosition();
+    for (int i = components.size() - 1; i > -1; --i)
+    {
+        if (components[i]->isPointInside(point))
+        {
+            activeComponent = components[i];
+            break;
+        }
+    }
+}
+
+void UI::UIComponentList::handleMouseEvents()
+{
+    setActiveComponent();
+    activeComponent->handleMouseEvent();
+};
+
+/*
+Implementation of UI::Background methods
+*/
+
+void UI::Background::render()
+{
+    DrawRectangle(position.x, position.y, width, height, color);
 }

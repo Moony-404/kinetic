@@ -22,14 +22,24 @@ namespace UI
         float height;
 
     public:
-        UIComponent(Vector2 p, float w, float h)
+        UIComponent(float x, float y, float w, float h)
         {
-            position = p;
+            position = (Vector2){x, y};
             width = w;
             height = h;
         }
 
         virtual void render() = 0;
+        virtual void handleMouseEvent() {}
+        virtual bool isPointInside(Vector2 p)
+        {
+            if (p.x > position.x + width || p.x < position.x)
+                return false;
+            if (p.y > position.y + height || p.y < position.y)
+                return false;
+
+            return true;
+        }
     };
 
     /*
@@ -43,11 +53,14 @@ namespace UI
         should be drawn onto the screen.
         */
         std::vector<UIComponent *> components = {};
+        UIComponent *activeComponent;
+        void setActiveComponent();
 
     public:
         void setList(std::vector<UIComponent *> c);
         void add(UIComponent *c);
         void render();
+        void handleMouseEvents();
     };
 
     /*
@@ -56,7 +69,8 @@ namespace UI
     class AbstractShape
     {
     public:
-        virtual void render(float delx, float dely) = 0;
+        virtual void render(float graphPositionX, float graphPositionY) = 0;
+        virtual bool isShapeVisible(Vector2 vPosition, Vector2 graphPosition, float width, float height) = 0;
     };
 
     class Polygon : public AbstractShape
@@ -68,6 +82,7 @@ namespace UI
         Polygon();
         void addVertex(Vector2);
         void addVertex(float x, float y);
+        bool isShapeVisible(Vector2 vPosition, Vector2 graphPosition, float width, float height) override;
         void render(float delx, float dely) override;
     };
 
@@ -100,11 +115,35 @@ namespace UI
         Vector2 graphPosition;
         void renderGridlines();
         void renderGraphObjects();
+        /*
+        A hack to keep objects in the viewport from spilling into the rest of the window.
+        Just a temporary solution. It has got a bunch of magic numbers which is totally not okay.
+        It works fine as long as we don't resize the window
+        */
+        void renderCover();
 
     public:
+        /*
+        graph attribute stores all the objects to be drawn on the viewport
+        */
         UI::Graph graph;
-        Viewport(Vector2 p, float w, float h);
+        Viewport(float x, float y, float w, float h);
         void render() override;
+        void handleMouseEvent() override;
         void setGridSpace(float s);
+        /*
+        Move the graph's position by mouseDelta (Vector2)
+        */
+        void pan(Vector2 mouseDelta);
+    };
+
+    class Background : public UIComponent
+    {
+    private:
+        Color color = {38, 43, 54, 255};
+
+    public:
+        Background(float width, float height) : UIComponent(0, 0, width, height) {}
+        void render() override;
     };
 }
