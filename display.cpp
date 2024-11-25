@@ -55,7 +55,7 @@ void UI::Polygon::render(float originx, float originy)
     }
 
     start = (Vector2){originx + it->x, originy + it->y};
-    end = (Vector2){originx + vertices.begin()->x, originy + vertices.begin()->x};
+    end = (Vector2){originx + vertices.begin()->x, originy + vertices.begin()->y};
     DrawLineEx(start, end, 2.0f, LineColor);
 }
 
@@ -233,4 +233,14 @@ Implementation of UI::Background methods
 void UI::Background::render()
 {
     DrawRectangle(position.x, position.y, width, height, color);
+}
+
+/*
+Implementation of UI::Toolbar methods
+*/
+
+void UI::Toolbar::render()
+{
+    DrawRectangle(position.x, position.y, width, height, BGColor);
+    DrawRectangleLines(position.x, position.y, width, height, BorderColor);
 }

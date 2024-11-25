@@ -15,24 +15,26 @@ void extern RunApplication()
     Create a UIComponent and add it to UIComponentList
     */
     Background bg(screenWidth, screenHeight);
-    Viewport v(50, 50, 700, 450);
+    Viewport viewport(150, 50, 600, 450);
+    Toolbar toolbar(90, 50, 50, 100);
 
     /*
     The order in which the components are added to the list matters
     */
     UIComponentList list;
     list.add(&bg);
-    list.add(&v);
+    list.add(&viewport);
+    list.add(&toolbar);
 
     /*
     Create and add a triangle to the graph
     */
     Polygon t;
-    t.addVertex(1000.0f, 1000.0f);
+    t.addVertex(400.0f, 500.0f);
     t.addVertex(100.0f, 100.0f);
     t.addVertex(200.0f, 40.0f);
 
-    v.graph.add(&t);
+    viewport.graph.add(&t);
 
     Vector2 delta = GetMouseDelta();
 

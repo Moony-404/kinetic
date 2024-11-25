@@ -146,4 +146,20 @@ namespace UI
         Background(float width, float height) : UIComponent(0, 0, width, height) {}
         void render() override;
     };
+
+    /*
+    Toolbar class, derived from UIComponent
+    */
+    class Toolbar : public UIComponent
+    {
+    private:
+        Color BGColor = {59, 66, 82, 255};
+        Color BorderColor = {136, 191, 208, 255};
+        int iconSize = 20;
+        int toolHovered = -1;
+
+    public:
+        Toolbar(float x, float y, float width, float height) : UIComponent(x, y, width, height) {}
+        void render() override;
+    };
 }
