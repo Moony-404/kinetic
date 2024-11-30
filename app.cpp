@@ -12,7 +12,7 @@ void extern RunApplication()
     using namespace UI;
 
     /*
-    Create a UIComponent and add it to UIComponentList
+    Create UIComponents and add them to UIComponentList
     */
     Background bg(screenWidth, screenHeight);
     Viewport viewport(150, 50, 600, 450);
@@ -41,12 +41,10 @@ void extern RunApplication()
     while (!WindowShouldClose())
     {
         BeginDrawing();
-
         {
             list.handleMouseEvents();
             list.render();
         }
-
         EndDrawing();
     }
 }

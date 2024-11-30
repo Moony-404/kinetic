@@ -176,10 +176,16 @@ void UI::Viewport::renderCover()
 
 void UI::Viewport::handleMouseEvent(UIComponentList *UIList)
 {
-    if (IsKeyDown(KEY_SPACE))
+    if (IsKeyDown(KEY_SPACE) && !UIList->isSelectedComponent(this))
     {
+        UIList->setSelectedComponent(this);
         pan(GetMouseDelta());
     }
+    else if (IsKeyUp(KEY_SPACE) && UIList->isSelectedComponent(this))
+        UIList->clearSelectedComponent();
+
+    else if (IsKeyDown(KEY_SPACE))
+        pan(GetMouseDelta());
 }
 
 void UI::Viewport::pan(Vector2 mouseDelta)
@@ -279,7 +285,6 @@ void UI::Toolbar::handleMouseEvent(UIComponentList *UIList)
     if (IsKeyDown(KEY_SPACE) && !UIList->isSelectedComponent(this))
     {
         UIList->setSelectedComponent(this);
-        printf("The Toolbar is selected.\n");
         move(GetMouseDelta());
     }
     else if (IsKeyUp(KEY_SPACE) && UIList->isSelectedComponent(this))
