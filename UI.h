@@ -10,6 +10,12 @@ namespace UI
     extern Color LineColor;
 
     /*
+    Need to declare these classes here or else the compiler would yell at you
+    */
+    class UIComponent;
+    class UIComponentList;
+
+    /*
     A Base class for all the UI elements.
     Elements like buttons, labels, viewport, etc inherit from this class
     */
@@ -30,7 +36,7 @@ namespace UI
         }
 
         virtual void render() = 0;
-        virtual void handleMouseEvent() {}
+        virtual void handleMouseEvent(UIComponentList *UIList) {}
         virtual bool isPointInside(Vector2 p)
         {
             if (p.x > position.x + width || p.x < position.x)
@@ -53,10 +59,14 @@ namespace UI
         should be drawn onto the screen.
         */
         std::vector<UIComponent *> components = {};
+        UIComponent *selectedComponent = NULL;
         UIComponent *activeComponent;
         void setActiveComponent();
 
     public:
+        void setSelectedComponent(UIComponent *c);
+        bool isSelectedComponent(UIComponent *c);
+        void clearSelectedComponent();
         void setList(std::vector<UIComponent *> c);
         void add(UIComponent *c);
         void render();
@@ -129,7 +139,7 @@ namespace UI
         UI::Graph graph;
         Viewport(float x, float y, float w, float h);
         void render() override;
-        void handleMouseEvent() override;
+        void handleMouseEvent(UIComponentList *UIList) override;
         void setGridSpace(float s);
         /*
         Move the graph's position by mouseDelta (Vector2)
@@ -160,6 +170,8 @@ namespace UI
 
     public:
         Toolbar(float x, float y, float width, float height) : UIComponent(x, y, width, height) {}
+        void move(Vector2 mouseDelta);
         void render() override;
+        void handleMouseEvent(UIComponentList *UIList) override;
     };
 }

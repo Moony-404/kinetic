@@ -174,7 +174,7 @@ void UI::Viewport::renderCover()
     DrawRectangle(position.x + width, 0, 100, position.y + height + 100, c);
 }
 
-void UI::Viewport::handleMouseEvent()
+void UI::Viewport::handleMouseEvent(UIComponentList *UIList)
 {
     if (IsKeyDown(KEY_SPACE))
     {
@@ -210,6 +210,7 @@ void UI::UIComponentList::render()
 void UI::UIComponentList::setActiveComponent()
 {
     Vector2 point = GetMousePosition();
+    // We iterate through the list of components in the reverse order
     for (int i = components.size() - 1; i > -1; --i)
     {
         if (components[i]->isPointInside(point))
@@ -220,10 +221,38 @@ void UI::UIComponentList::setActiveComponent()
     }
 }
 
+void UI::UIComponentList::setSelectedComponent(UIComponent *c)
+{
+    selectedComponent = c;
+}
+
+bool UI::UIComponentList::isSelectedComponent(UIComponent *c)
+{
+    return (c == selectedComponent ? true : false);
+}
+
+void UI::UIComponentList::clearSelectedComponent()
+{
+    selectedComponent = NULL;
+}
+
 void UI::UIComponentList::handleMouseEvents()
 {
-    setActiveComponent();
-    activeComponent->handleMouseEvent();
+
+    /*
+    There is a order in which the UIComponentList handles mouse events.
+    If there is a selected component then, UIComponentList prioritizes it,
+    else it delegates the handling of mouse event to the active component
+    */
+    if (selectedComponent != NULL)
+    {
+        selectedComponent->handleMouseEvent(this);
+    }
+    else
+    {
+        setActiveComponent();
+        activeComponent->handleMouseEvent(this);
+    }
 };
 
 /*
@@ -243,4 +272,24 @@ void UI::Toolbar::render()
 {
     DrawRectangle(position.x, position.y, width, height, BGColor);
     DrawRectangleLines(position.x, position.y, width, height, BorderColor);
+}
+
+void UI::Toolbar::handleMouseEvent(UIComponentList *UIList)
+{
+    if (IsKeyDown(KEY_SPACE) && !UIList->isSelectedComponent(this))
+    {
+        UIList->setSelectedComponent(this);
+        printf("The Toolbar is selected.\n");
+        move(GetMouseDelta());
+    }
+    else if (IsKeyUp(KEY_SPACE) && UIList->isSelectedComponent(this))
+        UIList->clearSelectedComponent();
+
+    else if (IsKeyDown(KEY_SPACE))
+        move(GetMouseDelta());
+}
+
+void UI::Toolbar::move(Vector2 mouseDelta)
+{
+    position = Vector2Add(position, mouseDelta);
 }
